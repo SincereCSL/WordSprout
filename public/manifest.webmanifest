@@ -1,0 +1,11 @@
+{
+  "name": "字芽 · 一笔一画学汉字",
+  "short_name": "字芽",
+  "description": "给小朋友的汉字笔顺练习应用",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f2e5",
+  "theme_color": "#2f6b55",
+  "lang": "zh-CN",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
