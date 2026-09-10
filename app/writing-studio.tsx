@@ -8,7 +8,6 @@ const EXAMPLES = ["日月山川", "天地人", "春风雨", "大小多少"];
 const DEFAULT_TEXT = "永";
 type WriterStatus = "loading" | "ready" | "error" | "animating" | "practicing" | "complete";
 type Pace = "slow" | "standard";
-type PronunciationIndex = { audio: string; entries: Record<string, { start: number; duration: number }> };
 
 const PACE = {
   slow: { strokeSpeed: 0.42, betweenStrokes: 680, voiceLead: 170 },
@@ -35,22 +34,9 @@ export default function WritingStudio() {
   const voiceEnabled = useRef(true);
   const audio = useRef<HTMLAudioElement | null>(null);
   const audioResolve = useRef<(() => void) | null>(null);
-  const pronunciationIndex = useRef<PronunciationIndex | null>(null);
   const activeChar = characters[activeIndex] ?? DEFAULT_TEXT;
   const readings = getReadings(characters.join(""));
   const reading = readings[activeIndex] ?? getReadings(activeChar)[0];
-
-  async function loadPronunciationIndex() {
-    if (pronunciationIndex.current) return pronunciationIndex.current;
-    try {
-      const response = await fetch("/audio/pronunciations.json");
-      if (!response.ok) return null;
-      pronunciationIndex.current = await response.json() as PronunciationIndex;
-      return pronunciationIndex.current;
-    } catch {
-      return null;
-    }
-  }
 
   function playPrompt(name: string) {
     return new Promise<void>((resolve) => {
@@ -86,48 +72,8 @@ export default function WritingStudio() {
     audioResolve.current = null;
   }
 
-  async function playPronunciation(key: string) {
-    if (!voiceEnabled.current) return;
-    const index = await loadPronunciationIndex();
-    const entry = index?.entries[key];
-    if (!index || !entry) return;
-    await new Promise<void>((resolve) => {
-      stopAudio();
-      const player = new Audio(index.audio);
-      audio.current = player;
-      let timer = window.setTimeout(() => finish(), 8000);
-      let finished = false;
-      const finish = () => {
-        if (finished) return;
-        finished = true;
-        window.clearTimeout(timer);
-        player.pause();
-        if (audio.current === player) audio.current = null;
-        if (audioResolve.current === finish) audioResolve.current = null;
-        resolve();
-      };
-      audioResolve.current = finish;
-      player.onerror = finish;
-      player.onloadedmetadata = () => {
-        const beginPlayback = () => {
-          player.onseeked = null;
-          window.clearTimeout(timer);
-          player.play().then(() => {
-            timer = window.setTimeout(finish, entry.duration * 1000 + 80);
-          }).catch(finish);
-        };
-        if (entry.start < 0.01) {
-          beginPlayback();
-          return;
-        }
-        // Seeking in an AAC/M4A sprite is asynchronous. Starting playback before
-        // this event makes some browsers play the first syllable (a) every time.
-        player.onseeked = beginPlayback;
-        player.currentTime = entry.start;
-      };
-      player.preload = "auto";
-      player.load();
-    });
+  function playPronunciation(key: string) {
+    return playPrompt(`pronunciations/${key}`);
   }
 
   async function playReading() {
@@ -153,6 +99,12 @@ export default function WritingStudio() {
     });
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    for (const item of getReadings(characters.join(""))) {
+      fetch(`/audio/pronunciations/${item.audioKey}.m4a`).catch(() => undefined);
+    }
+  }, [characters]);
 
   useEffect(() => {
     if (!writerHost.current) return;

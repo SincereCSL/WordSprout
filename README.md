@@ -34,7 +34,7 @@ pnpm test
 pnpm lint
 ```
 
-笔顺数据来自 `hanzi-writer-data`，书写交互由 `hanzi-writer` 驱动。汉字读音、教学提示和笔画名称均由同一套 Qwen3-TTS VoiceDesign 老师音色生成，并随应用离线提供。
+笔顺数据来自 `hanzi-writer-data`，书写交互由 `hanzi-writer` 驱动。汉字读音、教学提示和笔画名称均由同一套 Qwen3-TTS VoiceDesign 老师音色生成，并随应用离线提供。带声调的汉字读音保存为独立小文件，课程只按需加载当前输入汉字的读音。
 
 重新生成教学提示音：
 

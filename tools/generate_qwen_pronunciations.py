@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Build one seekable Qwen pronunciation sprite for offline character readings."""
+"""Generate Qwen pronunciation assets for offline character readings."""
 
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import json
+import shutil
+import subprocess
 import tempfile
 from pathlib import Path
 
@@ -48,16 +51,13 @@ def main():
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--assemble-only", action="store_true")
+    parser.add_argument("--export-files", action="store_true")
     args = parser.parse_args()
     target = args.output / "pronunciations.m4a"
     index_target = args.output / "pronunciations.json"
-    if target.exists() and index_target.exists() and not args.overwrite and not args.assemble_only:
-        print("读音包已经存在；如需重建请添加 --overwrite")
-        return
-
     prompts = json.loads(PROMPTS.read_text(encoding="utf-8"))
     CACHE.mkdir(parents=True, exist_ok=True)
-    missing = [] if args.assemble_only else [(key, char) for key, char in prompts.items() if args.overwrite or not (CACHE / f"{key}.wav").exists()]
+    missing = [] if args.assemble_only or args.export_files else [(key, char) for key, char in prompts.items() if args.overwrite or not (CACHE / f"{key}.wav").exists()]
     print(f"读音总数：{len(prompts)}；待生成：{len(missing)}", flush=True)
 
     if missing:
@@ -87,6 +87,34 @@ def main():
     import soundfile as sf
 
     sample_rate = 24000
+    if args.export_files or not args.assemble_only:
+        output_dir = args.output / "pronunciations"
+        output_dir.mkdir(parents=True, exist_ok=True)
+        ffmpeg = shutil.which("ffmpeg")
+        if not ffmpeg:
+            raise RuntimeError("未找到 ffmpeg")
+        jobs = [(key, char) for key, char in prompts.items() if args.overwrite or not (output_dir / f"{key}.m4a").exists()]
+        print(f"待导出独立读音：{len(jobs)}", flush=True)
+        with tempfile.TemporaryDirectory(prefix="ziya-pronunciation-files-") as temp_dir:
+            temp = Path(temp_dir)
+            def export(job):
+                key, _ = job
+                waveform, current_rate = sf.read(CACHE / f"{key}.wav", dtype="float32")
+                if current_rate != sample_rate:
+                    raise RuntimeError(f"采样率不一致：{key} = {current_rate}")
+                wav = temp / f"{key}.wav"
+                sf.write(wav, first_utterance(waveform, sample_rate), sample_rate, subtype="PCM_16")
+                subprocess.run([
+                    ffmpeg, "-loglevel", "error", "-y", "-i", str(wav),
+                    "-c:a", "aac", "-b:a", "48k", str(output_dir / f"{key}.m4a"),
+                ], check=True)
+            with ThreadPoolExecutor(max_workers=8) as pool:
+                for position, _ in enumerate(pool.map(export, jobs), 1):
+                    if position % 100 == 0 or position == len(jobs):
+                        print(f"[{position}/{len(jobs)}] 已导出", flush=True)
+        print(f"完成：{len(prompts)} 个按需读音文件", flush=True)
+        return
+
     silence = np.zeros(round(sample_rate * 0.12), dtype=np.float32)
     parts = []
     entries = {}

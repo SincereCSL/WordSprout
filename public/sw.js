@@ -1,4 +1,4 @@
-const CACHE = "ziya-v5";
+const CACHE = "ziya-v8";
 const STROKE_NAME_AUDIO = [
   "heng-zhe-zhe-pie", "shu-wan", "heng-zhe", "heng-xie-gou", "heng", "na", "heng-zhe-gou",
   "shu", "shu-gou", "dian", "pie", "pie-zhe", "shu-zhe-pie", "shu-zhe-zhe",
@@ -19,7 +19,6 @@ const CORE = [
   "/hanzi-data/川.json", "/hanzi-data/天.json", "/hanzi-data/地.json", "/hanzi-data/人.json",
   "/hanzi-data/春.json", "/hanzi-data/风.json", "/hanzi-data/雨.json", "/hanzi-data/大.json",
   "/hanzi-data/小.json", "/hanzi-data/多.json", "/hanzi-data/少.json",
-  "/audio/pronunciations.json", "/audio/pronunciations.m4a",
   ...PROMPT_AUDIO,
 ];
 self.addEventListener("install", (event) => event.waitUntil(
@@ -30,6 +29,14 @@ self.addEventListener("activate", (event) => event.waitUntil(
 ));
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  if (event.request.mode === "navigate") {
+    event.respondWith(fetch(event.request).then((response) => {
+      const copy = response.clone();
+      caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+      return response;
+    }).catch(() => caches.match(event.request).then((cached) => cached || caches.match("/"))));
+    return;
+  }
   event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
     const copy = response.clone();
     caches.open(CACHE).then((cache) => cache.put(event.request, copy));

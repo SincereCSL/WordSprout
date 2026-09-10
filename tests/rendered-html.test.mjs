@@ -36,20 +36,21 @@ test("exposes installable offline app metadata", async () => {
 });
 
 test("ships synchronized Qwen prompts for readings, stroke numbers, and names", async () => {
-  const [files, studio, serviceWorker] = await Promise.all([
+  const [files, pronunciationFiles, studio, serviceWorker] = await Promise.all([
     readdir(new URL("../public/audio/", import.meta.url)),
+    readdir(new URL("../public/audio/pronunciations/", import.meta.url)),
     readFile(new URL("../app/writing-studio.tsx", import.meta.url), "utf8"),
     readFile(new URL("../public/sw.js", import.meta.url), "utf8"),
   ]);
-  assert.ok(files.filter((file) => file.endsWith(".m4a")).length >= 103);
-  assert.ok(files.includes("pronunciations.m4a"));
-  assert.ok(files.includes("pronunciations.json"));
+  assert.ok(files.filter((file) => file.endsWith(".m4a")).length >= 102);
+  assert.equal(pronunciationFiles.filter((file) => file.endsWith(".m4a")).length, 1232);
   assert.match(studio, /playPrompt\(`stroke-/);
   assert.match(studio, /STROKE_AUDIO_NAMES/);
   assert.match(studio, /Promise\.all\(\[nameAudio, currentWriter\.animateStroke\(index\)\]\)/);
   assert.match(studio, /toneLabel/);
   assert.match(studio, /playPronunciation/);
-  assert.match(studio, /player\.onseeked = beginPlayback/);
+  assert.match(studio, /playPrompt\(`pronunciations\/\$\{key\}`\)/);
+  assert.doesNotMatch(studio, /currentTime|createBufferSource|pronunciations\.json/);
   assert.doesNotMatch(studio, /speechSynthesis|SpeechSynthesisUtterance/);
   assert.match(studio, /pace === "slow"/);
   assert.match(studio, /animateStroke\(index\)/);
