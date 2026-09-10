@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 async function render() {
@@ -32,4 +33,20 @@ test("exposes installable offline app metadata", async () => {
   assert.match(html, /manifest\.webmanifest/);
   assert.match(html, /theme-color/);
   assert.match(html, /og\.png/);
+});
+
+test("ships synchronized offline prompts for stroke numbers and names", async () => {
+  const [files, studio, serviceWorker] = await Promise.all([
+    readdir(new URL("../public/audio/", import.meta.url)),
+    readFile(new URL("../app/writing-studio.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../public/sw.js", import.meta.url), "utf8"),
+  ]);
+  assert.equal(files.filter((file) => file.endsWith(".m4a")).length, 66);
+  assert.match(studio, /playPrompt\(`stroke-/);
+  assert.match(studio, /STROKE_AUDIO_NAMES/);
+  assert.match(studio, /Promise\.all\(\[nameAudio, currentWriter\.animateStroke\(index\)\]\)/);
+  assert.match(studio, /toneLabel/);
+  assert.match(studio, /pace === "slow"/);
+  assert.match(studio, /animateStroke\(index\)/);
+  assert.match(serviceWorker, /PROMPT_AUDIO/);
 });

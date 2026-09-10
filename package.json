@@ -14,9 +14,12 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "cnchar": "^3.2.6",
+    "cnchar-order": "^3.2.6",
     "drizzle-orm": "0.45.2",
     "hanzi-writer": "^3.7.3",
     "hanzi-writer-data": "^2.0.1",
+    "pinyin-pro": "^3.29.3",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },

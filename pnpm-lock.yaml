@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      cnchar:
+        specifier: ^3.2.6
+        version: 3.2.6
+      cnchar-order:
+        specifier: ^3.2.6
+        version: 3.2.6
       drizzle-orm:
         specifier: 0.45.2
         version: 0.45.2
@@ -17,6 +23,9 @@ importers:
       hanzi-writer-data:
         specifier: ^2.0.1
         version: 2.0.1
+      pinyin-pro:
+        specifier: ^3.29.3
+        version: 3.29.3
       react:
         specifier: 19.2.6
         version: 19.2.6
@@ -1659,6 +1668,15 @@ packages:
     resolution: {integrity: sha512-rNjApaLzuwaOTjCiT8lSDdGN1APCiqkChLMJxJPWLunPAt5fy8xgU9/jNOchV84wfIxrA0lRQB7oCT8jrn/wrQ==}
     engines: {node: '>=6.0'}
 
+  cnchar-order@3.2.6:
+    resolution: {integrity: sha512-xeW1MnQk9GLW9rOvgTtBLl9amyJ0MBKAuXGgbiAwC/n1MRLoxW4ZnjPL+isVsi0rV3QXlbiDQQKAnL6TsJNLhA==}
+
+  cnchar-types@3.2.6:
+    resolution: {integrity: sha512-LGU2ss7KcsI1Psme73+jffUX0ZDuChr6P9Rj2j8lynJHStklNpoC/+kheKSSUcXQ1u2KNvZt1Shs/5efcihHkg==}
+
+  cnchar@3.2.6:
+    resolution: {integrity: sha512-7Up5ALAkoOTAHlRMN0B7VgrrRsp6+trgFV0M7xSsZ0TwnnBfW68gXClcE9Oz8sTOEu+zqGOZjBhlHNzPIBckDA==}
+
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
     engines: {node: '>=7.0.0'}
@@ -2736,6 +2754,9 @@ packages:
   picomatch@4.0.7:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
+
+  pinyin-pro@3.29.3:
+    resolution: {integrity: sha512-+UU9bx6vfDw8amOJGHm0TE0rdQl8VPylsDWviQ5OOQ3e+on1xRP4OqDbiDuMT5OISgvfl/Y6ez1BBRaIP80GLQ==}
 
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
@@ -4476,6 +4497,16 @@ snapshots:
 
   chrome-trace-event@1.0.4: {}
 
+  cnchar-order@3.2.6:
+    dependencies:
+      cnchar-types: 3.2.6
+
+  cnchar-types@3.2.6: {}
+
+  cnchar@3.2.6:
+    dependencies:
+      cnchar-types: 3.2.6
+
   color-convert@2.0.1:
     dependencies:
       color-name: 1.1.4
@@ -5579,6 +5610,8 @@ snapshots:
   picomatch@2.3.2: {}
 
   picomatch@4.0.7: {}
+
+  pinyin-pro@3.29.3: {}
 
   possible-typed-array-names@1.1.0: {}
 

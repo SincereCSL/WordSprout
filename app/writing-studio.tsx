@@ -1,11 +1,18 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import HanziWriter from "hanzi-writer";
+import { getReadings, getStrokeNames, STROKE_AUDIO_NAMES } from "./character-learning";
 
 const EXAMPLES = ["日月山川", "天地人", "春风雨", "大小多少"];
 const DEFAULT_TEXT = "永";
-type WriterStatus = "loading" | "ready" | "error" | "practicing" | "complete";
+type WriterStatus = "loading" | "ready" | "error" | "animating" | "practicing" | "complete";
+type Pace = "slow" | "standard";
+
+const PACE = {
+  slow: { strokeSpeed: 0.42, betweenStrokes: 680, voiceLead: 170 },
+  standard: { strokeSpeed: 0.62, betweenStrokes: 420, voiceLead: 120 },
+} as const;
 
 function onlyHanzi(value: string) {
   return Array.from(value).filter((char) => /[\u3400-\u9fff\uf900-\ufaff]/u.test(char)).slice(0, 12);
@@ -17,21 +24,85 @@ export default function WritingStudio() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [status, setStatus] = useState<WriterStatus>("loading");
   const [voiceOn, setVoiceOn] = useState(true);
+  const [pace, setPace] = useState<Pace>("slow");
   const [completed, setCompleted] = useState<string[]>([]);
   const [message, setMessage] = useState("先看一遍笔顺，再来亲手写写看");
   const writerHost = useRef<HTMLDivElement>(null);
   const writer = useRef<HanziWriter | null>(null);
+  const strokeCount = useRef(0);
+  const strokeNames = useRef<string[]>([]);
+  const voiceEnabled = useRef(true);
+  const audio = useRef<HTMLAudioElement | null>(null);
+  const audioResolve = useRef<(() => void) | null>(null);
+  const speechResolve = useRef<(() => void) | null>(null);
   const activeChar = characters[activeIndex] ?? DEFAULT_TEXT;
+  const readings = getReadings(characters.join(""));
+  const reading = readings[activeIndex] ?? getReadings(activeChar)[0];
 
-  const speak = useCallback((words: string) => {
-    if (!voiceOn || typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const speech = new SpeechSynthesisUtterance(words);
-    speech.lang = "zh-CN";
-    speech.rate = 0.76;
-    speech.pitch = 1.08;
-    window.speechSynthesis.speak(speech);
-  }, [voiceOn]);
+  function speakDynamic(words: string) {
+    return new Promise<void>((resolve) => {
+      if (!voiceEnabled.current || typeof window === "undefined" || !("speechSynthesis" in window)) { resolve(); return; }
+      stopAudio();
+      stopSpeech();
+      const speech = new SpeechSynthesisUtterance(words);
+      const voices = window.speechSynthesis.getVoices();
+      speech.voice = voices.find((voice) => voice.lang.toLowerCase().startsWith("zh") && /ting|yu|xiaoxiao|普通话|中文|mandarin/i.test(voice.name))
+        ?? voices.find((voice) => voice.lang.toLowerCase().startsWith("zh"))
+        ?? null;
+      speech.lang = "zh-CN";
+      speech.rate = 0.72;
+      speech.pitch = 1.03;
+      speechResolve.current = resolve;
+      const finish = () => {
+        if (speechResolve.current === resolve) speechResolve.current = null;
+        resolve();
+      };
+      speech.onend = finish;
+      speech.onerror = finish;
+      window.speechSynthesis.speak(speech);
+    });
+  }
+
+  function playPrompt(name: string) {
+    return new Promise<void>((resolve) => {
+      if (!voiceEnabled.current) { resolve(); return; }
+      stopAudio();
+      const player = new Audio(`/audio/${name}.m4a`);
+      audio.current = player;
+      audioResolve.current = resolve;
+      const finish = () => {
+        if (audio.current === player) audio.current = null;
+        if (audioResolve.current === resolve) audioResolve.current = null;
+        resolve();
+      };
+      player.onended = finish;
+      player.onerror = finish;
+      player.play().catch(finish);
+    });
+  }
+
+  function stopAudio() {
+    audio.current?.pause();
+    audio.current = null;
+    audioResolve.current?.();
+    audioResolve.current = null;
+  }
+
+  function stopSpeech() {
+    if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    speechResolve.current?.();
+    speechResolve.current = null;
+  }
+
+  function toggleVoice() {
+    const next = !voiceEnabled.current;
+    voiceEnabled.current = next;
+    setVoiceOn(next);
+    if (!next) {
+      stopAudio();
+      stopSpeech();
+    }
+  }
 
   useEffect(() => {
     const saved = window.localStorage.getItem("ziya-completed");
@@ -55,8 +126,8 @@ export default function WritingStudio() {
       outlineColor: "#d7d0bd",
       drawingColor: "#ef8354",
       drawingWidth: 24,
-      strokeAnimationSpeed: 0.85,
-      delayBetweenStrokes: 500,
+      strokeAnimationSpeed: PACE[pace].strokeSpeed,
+      delayBetweenStrokes: PACE[pace].betweenStrokes,
       showCharacter: true,
       showOutline: true,
       charDataLoader: (char, onComplete, onError) => {
@@ -69,6 +140,8 @@ export default function WritingStudio() {
           .catch(onError);
       },
       onLoadCharDataSuccess: (data) => {
+        strokeCount.current = data.strokes.length;
+        strokeNames.current = getStrokeNames(activeChar);
         setStatus("ready");
         setMessage(`“${activeChar}”一共有 ${data.strokes.length} 画，准备好了吗？`);
       },
@@ -79,9 +152,10 @@ export default function WritingStudio() {
     });
     return () => {
       writer.current?.cancelQuiz();
-      window.speechSynthesis?.cancel();
+      stopAudio();
+      stopSpeech();
     };
-  }, [activeChar, speak]);
+  }, [activeChar, pace]);
 
   function startLesson(value = input) {
     const clean = onlyHanzi(value);
@@ -93,38 +167,54 @@ export default function WritingStudio() {
 
   function submit(event: FormEvent) { event.preventDefault(); startLesson(); }
 
-  function animate() {
+  async function animate() {
     if (!writer.current || status === "loading") return;
-    writer.current.cancelQuiz();
-    setStatus("ready");
-    setMessage("仔细看，从哪里起笔、在哪里收笔");
-    speak(`${activeChar}。仔细看，一笔一画跟我写。`);
-    writer.current.animateCharacter({ onComplete: () => {
-      setMessage("看清楚了吗？现在轮到你啦");
-      speak("看清楚了吗？现在轮到你啦。");
-    }});
+    const currentWriter = writer.current;
+    currentWriter.cancelQuiz();
+    setStatus("animating");
+    const context = characters.length > 1 ? `在${characters.join("")}里，` : "";
+    const intro = `${context}这个字是${activeChar}，读作${activeChar}，${reading?.toneLabel ?? ""}，一共${strokeCount.current}画。`;
+    setMessage(`${activeChar} · ${reading?.pinyin ?? ""} · ${reading?.toneLabel ?? ""}`);
+    await currentWriter.hideCharacter({ duration: 180 });
+    await speakDynamic(intro);
+    await playPrompt("look-start");
+    for (let index = 0; index < strokeCount.current; index += 1) {
+      if (writer.current !== currentWriter) return;
+      const strokeName = strokeNames.current[index] ?? "这一笔";
+      setMessage(`第 ${index + 1} 笔：${strokeName}`);
+      if (index < 30) await playPrompt(`stroke-${String(index + 1).padStart(2, "0")}`);
+      const nameAudio = STROKE_AUDIO_NAMES[strokeName]
+        ? playPrompt(`stroke-name-${STROKE_AUDIO_NAMES[strokeName]}`)
+        : Promise.resolve();
+      await new Promise((resolve) => window.setTimeout(resolve, PACE[pace].voiceLead));
+      await Promise.all([nameAudio, currentWriter.animateStroke(index)]);
+      await new Promise((resolve) => window.setTimeout(resolve, PACE[pace].betweenStrokes));
+    }
+    setMessage("看清楚了吗？现在轮到你啦");
+    await playPrompt("look-complete");
+    if (writer.current === currentWriter) setStatus("ready");
   }
 
   function practice() {
     if (!writer.current || status === "loading") return;
     setStatus("practicing");
     setMessage("请在米字格里写一遍");
-    speak(`请写，${activeChar}。`);
+    void playPrompt("practice-start");
     writer.current.quiz({
       showHintAfterMisses: 2,
       highlightOnComplete: true,
       onMistake: (info) => {
         setMessage(`再想一想，第 ${info.strokeNum + 1} 笔从哪里开始？`);
-        speak(`慢一点，第${info.strokeNum + 1}笔，再试一次。`);
+        void playPrompt("mistake");
       },
       onCorrectStroke: (info) => {
         setMessage(`第 ${info.strokeNum + 1} 笔写对啦，继续！`);
-        speak("写对啦，继续。");
+        void playPrompt("correct");
       },
       onComplete: () => {
         setStatus("complete");
         setMessage(`太棒了！你会写“${activeChar}”了`);
-        speak(`太棒了！你会写，${activeChar}，了。`);
+        void playPrompt("complete");
         setCompleted((current) => {
           const next = Array.from(new Set([...current, activeChar]));
           window.localStorage.setItem("ziya-completed", JSON.stringify(next));
@@ -148,7 +238,7 @@ export default function WritingStudio() {
         </a>
         <div className="header-actions">
           <span className="offline-badge"><i />可离线学习</span>
-          <button className="icon-button" onClick={() => setVoiceOn((value) => !value)} aria-label={voiceOn ? "关闭语音" : "打开语音"}>{voiceOn ? "🔊" : "🔇"}</button>
+          <button className="icon-button" onClick={toggleVoice} aria-label={voiceOn ? "关闭语音" : "打开语音"}>{voiceOn ? "🔊" : "🔇"}</button>
         </div>
       </header>
 
@@ -181,8 +271,11 @@ export default function WritingStudio() {
 
         <article className="practice-card">
           <div className="practice-head">
-            <div><p>正在学习</p><h2>{activeChar}</h2></div>
-            <button className="listen" onClick={() => speak(`${activeChar}。`)}>🔊 听读音</button>
+            <div><p>正在学习</p><h2>{activeChar} <small>{reading?.pinyin} · {reading?.toneLabel}</small></h2></div>
+            <div className="lesson-options">
+              <button className="pace-button" onClick={() => setPace((current) => current === "slow" ? "standard" : "slow")} disabled={status === "animating"}>⏱ {pace === "slow" ? "慢速" : "标准"}</button>
+              <button className="listen" disabled={status === "animating"} onClick={() => void speakDynamic(`${characters.length > 1 ? `${characters.join("")}里的` : ""}${activeChar}，读作${activeChar}，${reading?.toneLabel ?? ""}。`)}>🔊 听读音</button>
+            </div>
           </div>
           <div className="workspace">
             <div className="paper-wrap">
@@ -194,8 +287,8 @@ export default function WritingStudio() {
             <div className="coach"><span className={status === "complete" ? "coach-face happy" : "coach-face"}>{status === "complete" ? "★" : "芽"}</span><p>{message}</p></div>
           </div>
           <div className="controls">
-            <button className="secondary" onClick={animate} disabled={status === "loading" || status === "error"}><span>▶</span> 看笔顺</button>
-            <button className="primary" onClick={practice} disabled={status === "loading" || status === "error"}><span>✎</span> 我来写</button>
+            <button className="secondary" onClick={animate} disabled={status === "loading" || status === "error" || status === "animating"}><span>▶</span> {status === "animating" ? "演示中…" : "看笔顺"}</button>
+            <button className="primary" onClick={practice} disabled={status === "loading" || status === "error" || status === "animating"}><span>✎</span> 我来写</button>
           </div>
           {characters.length > 1 && <div className="pager">
             <button onClick={() => move(-1)} disabled={activeIndex === 0}>← 上一个</button>

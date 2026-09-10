@@ -1,0 +1,272 @@
+{
+  "generator": "Qwen3-TTS VoiceDesign via MLX-Audio",
+  "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-4bit",
+  "voice": "一位温柔亲切、有活力的中国小学低年级女老师。使用自然流畅的普通话，语速稍慢，吐字清晰，像坐在孩子身边耐心陪伴书写。语气真诚、有鼓励感，不要播音腔，不要机械停顿，不要夸张或幼稚的卡通腔。",
+  "generatedAt": "2026-09-10T14:18:39.496285+00:00",
+  "files": [
+    {
+      "file": "complete.m4a",
+      "text": "太棒了！你写对了！"
+    },
+    {
+      "file": "correct.m4a",
+      "text": "写对啦，继续！"
+    },
+    {
+      "file": "look-complete.m4a",
+      "text": "看清楚了吗？现在轮到你啦！"
+    },
+    {
+      "file": "look-start.m4a",
+      "text": "仔细看，我们一笔一画来写这个字。"
+    },
+    {
+      "file": "mistake.m4a",
+      "text": "慢一点，想一想这一笔从哪里开始，再试一次。"
+    },
+    {
+      "file": "practice-start.m4a",
+      "text": "轮到你了，请在米字格里认真写一遍。"
+    },
+    {
+      "file": "stroke-01.m4a",
+      "text": "第1笔。"
+    },
+    {
+      "file": "stroke-02.m4a",
+      "text": "第2笔。"
+    },
+    {
+      "file": "stroke-03.m4a",
+      "text": "第3笔。"
+    },
+    {
+      "file": "stroke-04.m4a",
+      "text": "第4笔。"
+    },
+    {
+      "file": "stroke-05.m4a",
+      "text": "第5笔。"
+    },
+    {
+      "file": "stroke-06.m4a",
+      "text": "第6笔。"
+    },
+    {
+      "file": "stroke-07.m4a",
+      "text": "第7笔。"
+    },
+    {
+      "file": "stroke-08.m4a",
+      "text": "第8笔。"
+    },
+    {
+      "file": "stroke-09.m4a",
+      "text": "第9笔。"
+    },
+    {
+      "file": "stroke-10.m4a",
+      "text": "第10笔。"
+    },
+    {
+      "file": "stroke-11.m4a",
+      "text": "第11笔。"
+    },
+    {
+      "file": "stroke-12.m4a",
+      "text": "第12笔。"
+    },
+    {
+      "file": "stroke-13.m4a",
+      "text": "第13笔。"
+    },
+    {
+      "file": "stroke-14.m4a",
+      "text": "第14笔。"
+    },
+    {
+      "file": "stroke-15.m4a",
+      "text": "第15笔。"
+    },
+    {
+      "file": "stroke-16.m4a",
+      "text": "第16笔。"
+    },
+    {
+      "file": "stroke-17.m4a",
+      "text": "第17笔。"
+    },
+    {
+      "file": "stroke-18.m4a",
+      "text": "第18笔。"
+    },
+    {
+      "file": "stroke-19.m4a",
+      "text": "第19笔。"
+    },
+    {
+      "file": "stroke-20.m4a",
+      "text": "第20笔。"
+    },
+    {
+      "file": "stroke-21.m4a",
+      "text": "第21笔。"
+    },
+    {
+      "file": "stroke-22.m4a",
+      "text": "第22笔。"
+    },
+    {
+      "file": "stroke-23.m4a",
+      "text": "第23笔。"
+    },
+    {
+      "file": "stroke-24.m4a",
+      "text": "第24笔。"
+    },
+    {
+      "file": "stroke-25.m4a",
+      "text": "第25笔。"
+    },
+    {
+      "file": "stroke-26.m4a",
+      "text": "第26笔。"
+    },
+    {
+      "file": "stroke-27.m4a",
+      "text": "第27笔。"
+    },
+    {
+      "file": "stroke-28.m4a",
+      "text": "第28笔。"
+    },
+    {
+      "file": "stroke-29.m4a",
+      "text": "第29笔。"
+    },
+    {
+      "file": "stroke-30.m4a",
+      "text": "第30笔。"
+    },
+    {
+      "file": "stroke-name-dian.m4a",
+      "text": "点。"
+    },
+    {
+      "file": "stroke-name-heng-gou.m4a",
+      "text": "横钩。"
+    },
+    {
+      "file": "stroke-name-heng-pie-wan-gou.m4a",
+      "text": "横撇弯钩。"
+    },
+    {
+      "file": "stroke-name-heng-pie.m4a",
+      "text": "横撇。"
+    },
+    {
+      "file": "stroke-name-heng-xie-gou.m4a",
+      "text": "横斜钩。"
+    },
+    {
+      "file": "stroke-name-heng-zhe-gou.m4a",
+      "text": "横折钩。"
+    },
+    {
+      "file": "stroke-name-heng-zhe-ti.m4a",
+      "text": "横折提。"
+    },
+    {
+      "file": "stroke-name-heng-zhe-wan.m4a",
+      "text": "横折弯。"
+    },
+    {
+      "file": "stroke-name-heng-zhe-zhe-pie.m4a",
+      "text": "横折折撇。"
+    },
+    {
+      "file": "stroke-name-heng-zhe-zhe-zhe-gou.m4a",
+      "text": "横折折折钩。"
+    },
+    {
+      "file": "stroke-name-heng-zhe-zhe-zhe.m4a",
+      "text": "横折折折。"
+    },
+    {
+      "file": "stroke-name-heng-zhe-zhe.m4a",
+      "text": "横折折。"
+    },
+    {
+      "file": "stroke-name-heng-zhe.m4a",
+      "text": "横折。"
+    },
+    {
+      "file": "stroke-name-heng.m4a",
+      "text": "横。"
+    },
+    {
+      "file": "stroke-name-na.m4a",
+      "text": "捺。"
+    },
+    {
+      "file": "stroke-name-pie-dian.m4a",
+      "text": "撇点。"
+    },
+    {
+      "file": "stroke-name-pie-zhe.m4a",
+      "text": "撇折。"
+    },
+    {
+      "file": "stroke-name-pie.m4a",
+      "text": "撇。"
+    },
+    {
+      "file": "stroke-name-shu-gou.m4a",
+      "text": "竖钩。"
+    },
+    {
+      "file": "stroke-name-shu-ti.m4a",
+      "text": "竖提。"
+    },
+    {
+      "file": "stroke-name-shu-wan-gou.m4a",
+      "text": "竖弯钩。"
+    },
+    {
+      "file": "stroke-name-shu-wan.m4a",
+      "text": "竖弯。"
+    },
+    {
+      "file": "stroke-name-shu-zhe-pie.m4a",
+      "text": "竖折撇。"
+    },
+    {
+      "file": "stroke-name-shu-zhe-zhe-gou.m4a",
+      "text": "竖折折钩。"
+    },
+    {
+      "file": "stroke-name-shu-zhe-zhe.m4a",
+      "text": "竖折折。"
+    },
+    {
+      "file": "stroke-name-shu.m4a",
+      "text": "竖。"
+    },
+    {
+      "file": "stroke-name-ti.m4a",
+      "text": "提。"
+    },
+    {
+      "file": "stroke-name-wan-gou.m4a",
+      "text": "弯钩。"
+    },
+    {
+      "file": "stroke-name-wo-gou.m4a",
+      "text": "卧钩。"
+    },
+    {
+      "file": "stroke-name-xie-gou.m4a",
+      "text": "斜钩。"
+    }
+  ]
+}
