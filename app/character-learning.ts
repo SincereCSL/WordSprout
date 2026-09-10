@@ -47,7 +47,13 @@ export function getReadings(text: string) {
   const symbols = pinyin(text, { type: "array", toneType: "symbol" }) as string[];
   const numbered = pinyin(text, { type: "array", toneType: "num" }) as string[];
   return symbols.map((symbol, index) => {
-    const tone = Number(numbered[index]?.match(/[0-5]/)?.[0] ?? 5);
-    return { pinyin: symbol, tone, toneLabel: tone === 5 || tone === 0 ? "轻声" : `第${["", "一", "二", "三", "四"][tone]}声` };
+    const numberedPinyin = numbered[index] ?? "";
+    const tone = Number(numberedPinyin.match(/[0-5]/)?.[0] ?? 5);
+    return {
+      pinyin: symbol,
+      tone,
+      toneLabel: tone === 5 || tone === 0 ? "轻声" : `第${["", "一", "二", "三", "四"][tone]}声`,
+      audioKey: numberedPinyin.toLowerCase().replaceAll("ü", "v"),
+    };
   });
 }

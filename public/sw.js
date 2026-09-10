@@ -1,4 +1,4 @@
-const CACHE = "ziya-v3";
+const CACHE = "ziya-v5";
 const STROKE_NAME_AUDIO = [
   "heng-zhe-zhe-pie", "shu-wan", "heng-zhe", "heng-xie-gou", "heng", "na", "heng-zhe-gou",
   "shu", "shu-gou", "dian", "pie", "pie-zhe", "shu-zhe-pie", "shu-zhe-zhe",
@@ -7,7 +7,9 @@ const STROKE_NAME_AUDIO = [
   "heng-zhe-zhe-zhe", "shu-ti", "pie-dian", "shu-wan-gou",
 ].map((name) => `stroke-name-${name}`);
 const PROMPT_AUDIO = [
-  "look-start", "look-complete", "practice-start", "mistake", "correct", "complete",
+  "intro-reading", "look-start", "look-complete", "practice-start", "mistake", "correct", "complete",
+  ...Array.from({ length: 5 }, (_, index) => `tone-${index + 1}`),
+  ...Array.from({ length: 30 }, (_, index) => `total-strokes-${String(index + 1).padStart(2, "0")}`),
   ...Array.from({ length: 30 }, (_, index) => `stroke-${String(index + 1).padStart(2, "0")}`),
   ...STROKE_NAME_AUDIO,
 ].map((name) => `/audio/${name}.m4a`);
@@ -17,6 +19,7 @@ const CORE = [
   "/hanzi-data/川.json", "/hanzi-data/天.json", "/hanzi-data/地.json", "/hanzi-data/人.json",
   "/hanzi-data/春.json", "/hanzi-data/风.json", "/hanzi-data/雨.json", "/hanzi-data/大.json",
   "/hanzi-data/小.json", "/hanzi-data/多.json", "/hanzi-data/少.json",
+  "/audio/pronunciations.json", "/audio/pronunciations.m4a",
   ...PROMPT_AUDIO,
 ];
 self.addEventListener("install", (event) => event.waitUntil(

@@ -2,7 +2,7 @@
   "generator": "Qwen3-TTS VoiceDesign via MLX-Audio",
   "model": "mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-4bit",
   "voice": "一位温柔亲切、有活力的中国小学低年级女老师。使用自然流畅的普通话，语速稍慢，吐字清晰，像坐在孩子身边耐心陪伴书写。语气真诚、有鼓励感，不要播音腔，不要机械停顿，不要夸张或幼稚的卡通腔。",
-  "generatedAt": "2026-09-10T14:18:39.496285+00:00",
+  "generatedAt": "2026-09-10T14:47:16.828996+00:00",
   "files": [
     {
       "file": "complete.m4a",
@@ -11,6 +11,10 @@
     {
       "file": "correct.m4a",
       "text": "写对啦，继续！"
+    },
+    {
+      "file": "intro-reading.m4a",
+      "text": "这个字读作。"
     },
     {
       "file": "look-complete.m4a",
@@ -267,6 +271,146 @@
     {
       "file": "stroke-name-xie-gou.m4a",
       "text": "斜钩。"
+    },
+    {
+      "file": "tone-1.m4a",
+      "text": "第一声。"
+    },
+    {
+      "file": "tone-2.m4a",
+      "text": "第二声。"
+    },
+    {
+      "file": "tone-3.m4a",
+      "text": "第三声。"
+    },
+    {
+      "file": "tone-4.m4a",
+      "text": "第四声。"
+    },
+    {
+      "file": "tone-5.m4a",
+      "text": "轻声。"
+    },
+    {
+      "file": "total-strokes-01.m4a",
+      "text": "一共1画。"
+    },
+    {
+      "file": "total-strokes-02.m4a",
+      "text": "一共2画。"
+    },
+    {
+      "file": "total-strokes-03.m4a",
+      "text": "一共3画。"
+    },
+    {
+      "file": "total-strokes-04.m4a",
+      "text": "一共4画。"
+    },
+    {
+      "file": "total-strokes-05.m4a",
+      "text": "一共5画。"
+    },
+    {
+      "file": "total-strokes-06.m4a",
+      "text": "一共6画。"
+    },
+    {
+      "file": "total-strokes-07.m4a",
+      "text": "一共7画。"
+    },
+    {
+      "file": "total-strokes-08.m4a",
+      "text": "一共8画。"
+    },
+    {
+      "file": "total-strokes-09.m4a",
+      "text": "一共9画。"
+    },
+    {
+      "file": "total-strokes-10.m4a",
+      "text": "一共10画。"
+    },
+    {
+      "file": "total-strokes-11.m4a",
+      "text": "一共11画。"
+    },
+    {
+      "file": "total-strokes-12.m4a",
+      "text": "一共12画。"
+    },
+    {
+      "file": "total-strokes-13.m4a",
+      "text": "一共13画。"
+    },
+    {
+      "file": "total-strokes-14.m4a",
+      "text": "一共14画。"
+    },
+    {
+      "file": "total-strokes-15.m4a",
+      "text": "一共15画。"
+    },
+    {
+      "file": "total-strokes-16.m4a",
+      "text": "一共16画。"
+    },
+    {
+      "file": "total-strokes-17.m4a",
+      "text": "一共17画。"
+    },
+    {
+      "file": "total-strokes-18.m4a",
+      "text": "一共18画。"
+    },
+    {
+      "file": "total-strokes-19.m4a",
+      "text": "一共19画。"
+    },
+    {
+      "file": "total-strokes-20.m4a",
+      "text": "一共20画。"
+    },
+    {
+      "file": "total-strokes-21.m4a",
+      "text": "一共21画。"
+    },
+    {
+      "file": "total-strokes-22.m4a",
+      "text": "一共22画。"
+    },
+    {
+      "file": "total-strokes-23.m4a",
+      "text": "一共23画。"
+    },
+    {
+      "file": "total-strokes-24.m4a",
+      "text": "一共24画。"
+    },
+    {
+      "file": "total-strokes-25.m4a",
+      "text": "一共25画。"
+    },
+    {
+      "file": "total-strokes-26.m4a",
+      "text": "一共26画。"
+    },
+    {
+      "file": "total-strokes-27.m4a",
+      "text": "一共27画。"
+    },
+    {
+      "file": "total-strokes-28.m4a",
+      "text": "一共28画。"
+    },
+    {
+      "file": "total-strokes-29.m4a",
+      "text": "一共29画。"
+    },
+    {
+      "file": "total-strokes-30.m4a",
+      "text": "一共30画。"
     }
   ]
 }

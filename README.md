@@ -34,10 +34,12 @@ pnpm test
 pnpm lint
 ```
 
-笔顺数据来自 `hanzi-writer-data`，书写交互由 `hanzi-writer` 驱动。教学提示音由 Qwen3-TTS VoiceDesign 预生成并随应用离线提供；任意汉字的单字读音仍使用设备自带的中文语音。
+笔顺数据来自 `hanzi-writer-data`，书写交互由 `hanzi-writer` 驱动。汉字读音、教学提示和笔画名称均由同一套 Qwen3-TTS VoiceDesign 老师音色生成，并随应用离线提供。
 
 重新生成教学提示音：
 
 ```bash
 /opt/homebrew/bin/python3.12 tools/generate_ziya_audio.py --overwrite
+/Users/bruce/.nvm/versions/node/v22.23.2/bin/node tools/build_pronunciation_prompts.mjs
+/opt/homebrew/bin/python3.12 tools/generate_qwen_pronunciations.py --overwrite
 ```

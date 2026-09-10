@@ -21,6 +21,7 @@ VOICE = (
 )
 
 PROMPTS = {
+    "intro-reading": "这个字读作。",
     "look-start": "仔细看，我们一笔一画来写这个字。",
     "look-complete": "看清楚了吗？现在轮到你啦！",
     "practice-start": "轮到你了，请在米字格里认真写一遍。",
@@ -29,6 +30,9 @@ PROMPTS = {
     "complete": "太棒了！你写对了！",
 }
 PROMPTS.update({f"stroke-{number:02d}": f"第{number}笔。" for number in range(1, 31)})
+PROMPTS.update({f"tone-{number}": f"第{'一二三四'[number - 1]}声。" for number in range(1, 5)})
+PROMPTS["tone-5"] = "轻声。"
+PROMPTS.update({f"total-strokes-{number:02d}": f"一共{number}画。" for number in range(1, 31)})
 STROKE_NAMES = {
     "heng-zhe-zhe-pie": "横折折撇。", "shu-wan": "竖弯。", "heng-zhe": "横折。",
     "heng-xie-gou": "横斜钩。", "heng": "横。", "na": "捺。", "heng-zhe-gou": "横折钩。",
