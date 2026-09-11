@@ -108,13 +108,17 @@ export default function WritingStudio() {
 
   useEffect(() => {
     if (!writerHost.current) return;
-    writerHost.current.innerHTML = "";
+    const host = writerHost.current;
+    const getWriterSize = () => Math.max(1, Math.floor(Math.min(host.clientWidth, host.clientHeight)));
+    const getWriterPadding = (size: number) => size / 12;
+    host.innerHTML = "";
     setStatus("loading");
     setMessage(`正在准备“${activeChar}”的字帖…`);
-    writer.current = HanziWriter.create(writerHost.current, activeChar, {
-      width: 360,
-      height: 360,
-      padding: 30,
+    const initialSize = getWriterSize();
+    const currentWriter = HanziWriter.create(host, activeChar, {
+      width: initialSize,
+      height: initialSize,
+      padding: getWriterPadding(initialSize),
       strokeColor: "#213e34",
       radicalColor: "#e36f43",
       outlineColor: "#d7d0bd",
@@ -144,8 +148,21 @@ export default function WritingStudio() {
         setMessage(`暂时没有找到“${activeChar}”的笔顺数据`);
       },
     });
+    writer.current = currentWriter;
+
+    const resizeObserver = new ResizeObserver(() => {
+      const size = getWriterSize();
+      currentWriter.updateDimensions({
+        width: size,
+        height: size,
+        padding: getWriterPadding(size),
+      });
+    });
+    resizeObserver.observe(host);
+
     return () => {
-      writer.current?.cancelQuiz();
+      resizeObserver.disconnect();
+      currentWriter.cancelQuiz();
       stopAudio();
     };
   }, [activeChar, pace]);

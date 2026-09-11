@@ -56,3 +56,15 @@ test("ships synchronized Qwen prompts for readings, stroke numbers, and names", 
   assert.match(studio, /animateStroke\(index\)/);
   assert.match(serviceWorker, /PROMPT_AUDIO/);
 });
+
+test("keeps the writing grid responsive and the mobile footer visible", async () => {
+  const [studio, styles] = await Promise.all([
+    readFile(new URL("../app/writing-studio.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(studio, /new ResizeObserver/);
+  assert.match(studio, /currentWriter\.updateDimensions/);
+  assert.match(styles, /\.lesson-shell \{ grid-template-columns:1fr; margin-bottom:0; \}/);
+  assert.match(styles, /footer \{ min-height:auto;/);
+});
