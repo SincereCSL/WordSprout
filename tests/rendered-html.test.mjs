@@ -88,3 +88,18 @@ test("uses the 字芽 seed mark for the page and browser icon", async () => {
   assert.doesNotMatch(favicon, /#2E9EFF|#0C79D8|#68C4FF/);
   assert.match(serviceWorker, /const CACHE = "ziya-v9"/);
 });
+
+test("supports contextual and selectable polyphonic readings", async () => {
+  const [learning, studio] = await Promise.all([
+    readFile(new URL("../app/character-learning.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/writing-studio.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(learning, /盛饭: "chéng fàn"/);
+  assert.match(learning, /背东西: "bēi dōng xi"/);
+  assert.match(learning, /export function getReadingOptions/);
+  assert.match(learning, /polyphonic\(text/);
+  assert.match(studio, /readingOptions\.length > 1/);
+  assert.match(studio, /aria-pressed=/);
+  assert.match(studio, /chooseReading\(option\)/);
+});
