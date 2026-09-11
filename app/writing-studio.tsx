@@ -242,7 +242,7 @@ export default function WritingStudio() {
     <main>
       <header className="topbar">
         <a className="brand" href="#top" aria-label="字芽首页">
-          <span className="brand-seed" aria-hidden="true"><i /><b /></span>
+          <span className="brand-seed" aria-hidden="true" />
           <span>字芽<small>一笔一画，慢慢长大</small></span>
         </a>
         <div className="header-actions">
