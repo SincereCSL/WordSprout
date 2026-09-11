@@ -2,10 +2,12 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import HanziWriter from "hanzi-writer";
+import type { CharacterJson } from "hanzi-writer";
 import { getReadingOptions, getReadings, getStrokeNames, Reading, STROKE_AUDIO_NAMES } from "./character-learning";
 
 const EXAMPLES = ["日月山川", "天地人", "春风雨", "大小多少"];
 const DEFAULT_TEXT = "永";
+const HANZI_DATA_VERSION = "2.0.1";
 type WriterStatus = "loading" | "ready" | "error" | "animating" | "practicing" | "complete";
 type Pace = "slow" | "standard";
 
@@ -16,6 +18,39 @@ const PACE = {
 
 function onlyHanzi(value: string) {
   return Array.from(value).filter((char) => /[\u3400-\u9fff\uf900-\ufaff]/u.test(char)).slice(0, 12);
+}
+
+function isCharacterData(value: unknown): value is CharacterJson {
+  if (!value || typeof value !== "object") return false;
+  const data = value as Partial<CharacterJson>;
+  return Array.isArray(data.strokes)
+    && data.strokes.length > 0
+    && Array.isArray(data.medians)
+    && data.medians.length === data.strokes.length;
+}
+
+async function loadCharacterData(char: string) {
+  const encodedChar = encodeURIComponent(char);
+  const sources = [
+    `/hanzi-data/${encodedChar}.json?v=${HANZI_DATA_VERSION}`,
+    `https://cdn.jsdelivr.net/npm/hanzi-writer-data@${HANZI_DATA_VERSION}/${encodedChar}.json`,
+    `https://unpkg.com/hanzi-writer-data@${HANZI_DATA_VERSION}/${encodedChar}.json`,
+  ];
+  let lastError: unknown;
+
+  for (const source of sources) {
+    try {
+      const response = await fetch(source);
+      if (!response.ok) throw new Error(`character data request failed: ${response.status}`);
+      const data: unknown = await response.json();
+      if (!isCharacterData(data)) throw new Error("invalid character data");
+      return data;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError ?? new Error("character data unavailable");
 }
 
 export default function WritingStudio() {
@@ -134,11 +169,7 @@ export default function WritingStudio() {
       showCharacter: true,
       showOutline: true,
       charDataLoader: (char, onComplete, onError) => {
-        fetch(`/hanzi-data/${encodeURIComponent(char)}.json`)
-          .then((response) => {
-            if (!response.ok) throw new Error("missing local data");
-            return response.json();
-          })
+        loadCharacterData(char)
           .then(onComplete)
           .catch(onError);
       },
